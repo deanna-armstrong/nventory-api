@@ -1,21 +1,22 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
-  });
+  const app = await NestFactory.create(AppModule);
 
-  const configService = app.get(ConfigService);
-  Logger.debug(`JWT_SECRET: ${configService.get('JWT_SECRET')}`);
+  const allowedOrigins = [
+    'http://localhost:4200', // for local Angular dev
+    'https://nventory-ui.vercel.app', // for live Vercel app
+  ];
 
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin not allowed by CORS: ${origin}`));
+      }
+    },
     credentials: true,
   });
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
