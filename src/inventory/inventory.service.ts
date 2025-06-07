@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Inventory, InventoryDocument } from './inventory.schema';
 import { PriorityQueue } from '../utils/priority-queue';
+import { environment } from '../environments/environment';
 
 @Injectable()
 export class InventoryService {
