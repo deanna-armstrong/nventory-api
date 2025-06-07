@@ -13,15 +13,13 @@ async function bootstrap() {
     'https://nventory-2gj3p6sk6-deanna-armstrongs-projects.vercel.app'
   ];
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS denied for ${origin}`), false);
-      }
-    },
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type,Authorization',
+    origin: [
+      'http://localhost:4200',
+      'https://nventory-ui.vercel.app',
+      'https://nventory-2gj3p6sk6-deanna-armstrongs-projects.vercel.app'
+    ],
+    methods: ['GET','HEAD','PUT','PATCH','POST','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization'],
     credentials: true,
   });
 
