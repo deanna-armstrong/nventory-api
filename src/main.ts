@@ -10,6 +10,8 @@ async function bootstrap() {
     'https://nventory-2gj3p6sk6-deanna-armstrongs-projects.vercel.app' 
   ];
 
+  app.setGlobalPrefix('api');
+  
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
