@@ -3,14 +3,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Inventory, InventorySchema } from './inventory.schema';
 import { InventoryService } from './inventory.service';
 import { InventoryController } from './inventory.controller';
-import { NotificationsModule } from '../notifications/notifications.module'; // <-- Add this
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Inventory.name, schema: InventorySchema }
     ]),
-    NotificationsModule // <-- This is REQUIRED
+    NotificationsModule
   ],
   controllers: [InventoryController],
   providers: [InventoryService],

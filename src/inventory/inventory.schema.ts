@@ -20,7 +20,7 @@ export class Inventory {
    @Prop({ required: false, default: 1 })
   reorderFrequency: number;
 
-  @Prop({ required: true, default: 5 }) // you can adjust the default
+  @Prop({ required: true, default: 5 })
   reorderThreshold: number;
 }
 
