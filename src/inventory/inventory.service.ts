@@ -51,7 +51,7 @@ export class InventoryService {
     }
 
   } else {
-    // Optional cleanup: Mark LOW_STOCK notifications as read if item is restocked
+
     await this.notificationsService.markAllAsReadForItem(String(updated._id), 'LOW_STOCK');
   }
 
