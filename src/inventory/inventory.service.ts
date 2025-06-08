@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Inventory, InventoryDocument } from './inventory.schema';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PriorityQueue } from '../utils/priority-queue';
 import { environment } from '../environments/environment';
 
@@ -9,7 +10,8 @@ import { environment } from '../environments/environment';
 export class InventoryService {
   constructor(
     @InjectModel(Inventory.name)
-    private inventoryModel: Model<InventoryDocument>
+    private inventoryModel: Model<InventoryDocument>,
+    private readonly notificationsService: NotificationsService
   ) {}
 
   async findAll(): Promise<Inventory[]> {
@@ -28,10 +30,33 @@ export class InventoryService {
   }
 
   async update(id: string, data: Partial<Inventory>): Promise<Inventory> {
-    const updated = await this.inventoryModel.findByIdAndUpdate(id, data, { new: true });
-    if (!updated) throw new NotFoundException('Item not found');
-    return updated;
+  const updated = await this.inventoryModel.findByIdAndUpdate(id, data, { new: true }) as InventoryDocument;
+  if (!updated) throw new NotFoundException('Item not found');
+
+  const qty = updated.quantity ?? 0;
+  const threshold = updated.reorderThreshold ?? 1;
+
+  if (qty <= threshold) {
+    const notification = await this.notificationsService.create({
+      title: `Low stock for ${updated.name}`,
+      body: `${updated.name} has fallen below the threshold of ${threshold}.`,
+      type: 'LOW_STOCK',
+      itemId: String(updated._id)
+    });
+
+    if (notification) {
+      console.log('Notification created:', notification.title);
+    } else {
+      console.log('Skipped duplicate LOW_STOCK notification for', updated.name);
+    }
+
+  } else {
+    // Optional cleanup: Mark LOW_STOCK notifications as read if item is restocked
+    await this.notificationsService.markAllAsReadForItem(String(updated._id), 'LOW_STOCK');
   }
+
+  return updated;
+}
 
   async delete(id: string): Promise<void> {
     const result = await this.inventoryModel.findByIdAndDelete(id);
