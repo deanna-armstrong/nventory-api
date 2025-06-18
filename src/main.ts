@@ -4,9 +4,11 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('api');
+
   const allowedOrigins = [
-    'http://localhost:4200', // for local Angular dev
-    'https://nventory-ui.vercel.app', // for live Vercel app
+    'http://localhost:4200', 
+    'https://nventory-ui.vercel.app',
   ];
 
   app.enableCors({

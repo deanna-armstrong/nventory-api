@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { APP_GUARD } from '@nestjs/core';
 
@@ -11,7 +12,8 @@ import { RolesGuard } from './auth/roles.guard';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost/nventory'),
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGO_URI!),
     InventoryModule,
     UsersModule,
     AuthModule,
