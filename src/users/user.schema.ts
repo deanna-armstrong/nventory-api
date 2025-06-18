@@ -9,7 +9,7 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ default: 'user' }) // can be 'user' or 'admin'
+  @Prop({ default: 'user' })
   role: string;
 }
 export type UserDocument = User & Document;
