@@ -7,18 +7,11 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-<<<<<<< HEAD
-  const allowedOrigins = [
-    'http://localhost:4200', 
-    'https://nventory-ui.vercel.app',
-  ];
-=======
   app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,       // strips properties not in the DTO
-    forbidNonWhitelisted: true, // throws if unknown properties are present
-    transform: true,       // auto-transforms payloads to match DTO types
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
   }));
->>>>>>> b5fd09ab270e05b24c1d489f6529ee7f762e6d87
 
   app.enableCors({
     origin: [
