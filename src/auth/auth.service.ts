@@ -19,7 +19,6 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  /** Register a new user and immediately return a JWT */
   async register(userData: Partial<User>) {
     if (!userData.password) {
       throw new BadRequestException('Password is required');
@@ -42,37 +41,35 @@ export class AuthService {
       role: savedUser.role,
     };
     const token = this.jwtService.sign(payload);
-    return { access_token: token };
+    const { password, ...user } = savedUser.toObject();
+      return {
+      access_token: token,
+       user};
   }
 
-  /** Validate credentials, compare password, and return JWT + safe user */
   async login(credentials: { email: string; password: string }) {
-    // Step 1: fetch the document *including* the password hash
     const userDoc = await this.userModel
       .findOne({ email: credentials.email })
-      .select('+password');  // override schema-level select:false
+      .select('+password');
 
     this.logger.debug(`User found for login: ${userDoc?.email}`);
 
-    // Step 2: guard missing user or hash
     if (!userDoc || !userDoc.password) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Step 3: compare supplied password against hash
     const isValid = await bcrypt.compare(credentials.password, userDoc.password);
     if (!isValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Step 4: create JWT and strip hash before returning
     const { password, ...user } = userDoc.toObject();
     const payload = { username: user.email, sub: user._id, role: user.role };
     const token = this.jwtService.sign(payload);
 
     return {
       access_token: token,
-      user,  // contains email, role, _id, etc., but no password
+      user,
     };
   }
 }
